@@ -1,19 +1,743 @@
 <!DOCTYPE html>
-<html>
+<html class="has-navbar-fixed-top">
   <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="monetization" content="$twitter.xrptipbot.com/retryW_">
+    <title>Easy XRP Wallet</title>
+	<link rel="stylesheet" href="assets\css\bulma.css">
+	<link rel="stylesheet" href="node_modules\bulma-extensions\dist\css\bulma-extensions.min.css">
+	<script src="assets\js\vue.js"></script>
+	<script src="node_modules\bulma-extensions\dist\js\bulma-extensions.min.js"></script>
+	<!--<script defer src="/assets/fontawesome/js/all.js"></script> --><!--load all styles -->
+	<link rel="stylesheet" href="assets\fontawesome\css\all.min.css">
   </head>
-  <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
+  
+<nav class="navbar is-info is-fixed-top" style="-webkit-app-region: drag">
+  	<div class="navbar-brand">
+		<p class="navbar-item is" style="font-size: 110%">
+			Easy<img src="assets\images\XRP-Symbol-Kit\text-mark\xrp-text-mark-black-small@2x.png" width="98" height="28">
+		</p>
+  	</div>
 
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
-  </body>
+	<div class="navbar-menu">
+    	<div class="navbar-end">
+      		<div class="navbar-item">
+        		<div class="field has-addons" style="-webkit-app-region: no-drag">
+          			<p class="control">
+            			<a id="minimize-button" class="button is-info is-medium">
+							<span class="icon">
+								<i class="fas fa-window-minimize"></i>
+							</span>
+            			</a>
+          			</p>
+		  			<p class="control">
+						<a id="maximize-button"class="button is-info is-medium">
+							<span class="icon">
+								<i class="far fa-window-maximize"></i>
+							</span>
+						</a>
+          			</p>
+		  			<p class="control">
+            			<a id="close-button"class="button is-info is-medium">
+              				<span class="icon">
+                				<i class="fas fa-window-close"></i>
+              				</span>
+            			</a>
+          			</p>
+        		</div>
+      		</div>
+    	</div>
+ 	</div>
+  <script src="assets/js/utils.js"></script>
+</nav>
+<body style="-webkit-app-region: drag">
+	<div class="hero is-info">
+	<div class="hero-body" id="app">
+	<section id="main-menu" class="section has-text-centered pages">
+		<div class="container">
+			<div class="box"  style="-webkit-app-region: no-drag">
+				<div class="field">
+					<h1 class="title is-2 has-text-dark">New Users</h1>
+					<p class="subtitle is-4 has-text-grey">Create a new EasyXRP wallet</p>
+					<a class="button is-link" onclick="changePage('new-user-section')">Create new wallet</a>
+				</div>
+				<section style="height: 25px"></section>
+				<!--<hr>-->
+				<div class="is-divider" data-content="OR"></div>
+				<section style="height: 10px"></section>
+				<h1 class="title is-2 has-text-dark">Existing Users</h1>
+				<p class="subtitle is-4 has-text-grey">Login with EasyXRP wallet file</p>
+				<div class="field is-grouped wallet-input-group">
+					<p class="control has-icons-left is-text-input-alt">
+						<input 
+							type="text" 
+							class="input" 
+							placeholder="C:\ProgramData\EasyXRP\my-wallet.exw"
+							v-model="walletPath"
+						>
+						<span class="icon is-small is-left">
+							<i class="fas fa-wallet"></i>
+						</span>
+					</p>
+					<a class="button is-link" v-on:click="OpenExistingWallet">
+						<span class="icon is-small">
+							<i class="fas fa-folder-open"></i>
+						</span>
+					</a>
+				</div>
+				<section style="height: 10px"></section>
+			</div>			
+		</div>
+	</section>
+	<section id="new-user-section" class="section has-text-centered pages" style="display: none">
+			<div class="container">
+				<div class="box"  style="-webkit-app-region: no-drag">
+					<div class="field">
+						<h1 class="title has-text-dark">Step 1</h1>
+						<h1 class="subtitle has-text-grey subtitle-remove-margin">Generate New XRP Ledger Address</h1>
+						<p class="has-text-grey">(If you already have one, skip to Step 2)</p>
+						<section style="height: 15px"></section>
+						<button class="button is-link" v-on:click="DecryptWallet(password)">Generate</button>
+					</div>
+					<section style="height: 15px"></section>
+					<hr>
+					<section style="height: 5px"></section>
+					<div class="field">
+						<h1 class="title has-text-dark">Step 2</h1>
+						<p class="subtitle has-text-grey is-paddingless is-marginless">Create EasyXRP wallet using XRP secret key</p>
+						<section style="height: 10px"></section>
+						<p class="control has-icons-left is-text-input">
+							<input 
+								type="text"
+								class="input"
+								placeholder="sXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+								v-model="seed"
+							>
+							<span class="icon is-small is-left">
+							  <i class="fas fa-key"></i>
+							</span>
+						 </p>
+					</div>
+					<section style="height: 10px"></section>
+					<button class="button is-link" onclick="changePage('enter-password-section')">Create EasyXRP wallet</button>
+					<section style="height: 10px"></section>
+				</div>
+			</div>
+	</section>
+	<section id="enter-password-section" class="section has-text-centered pages" style="display: none">
+		<div class="container">
+			<div class="box"  style="-webkit-app-region: no-drag">
+				<div class="field">
+					<h1 class="title has-text-dark">Step 3</h1>
+					<h1 class="subtitle has-text-grey subtitle-remove-margin">Enter a password</h1>
+					<p class="has-text-grey">(This is what you will use to login to EasyXRP Wallet)</p>
+					<section style="height: 10px"></section>
+					<p class="control has-icons-left is-text-input">
+						<input 
+							type="text"
+							class="input"
+							placeholder="NotAnObviousPassword!"
+							v-model="password"
+						>
+						<span class="icon is-small is-left">
+							<i class="fas fa-key"></i>
+						</span>
+					</p>
+				</div>
+				<section style="height: 10px"></section>
+				<button class="button is-link" v-on:click="WalletCreate">Create EasyXRP wallet</button>
+				<section style="height: 10px"></section>
+			</div>
+		</div>
+	</section>
+	<section id="wallet-created-section" class="section has-text-centered pages" style="display: none">
+		<div class="container">
+			<div class="box"  style="-webkit-app-region: no-drag">
+				<div class="field">
+					<h1 class="title has-text-danger">Wallet Created Successfully!</h1>
+					<h1 class="subtitle has-text-grey subtitle-remove-margin">Click below to continue</h1>
+					<section style="height: 10px"></section>
+					<button class="button is-link" onclick="changePage('main-section')">Continue</button>
+				</div>
+				<section style="height: 10px"></section>
+			</div>
+		</div>
+	</section>
+	<section id="transaction-pending-section" class="section has-text-centered pages" style="display: none">
+		<div class="container">
+			<div class="box"  style="-webkit-app-region: no-drag">
+				<div class="field">
+					<h1 class="title has-text-danger">Transaction Submitted!</h1>
+					<h1 class="subtitle has-text-grey subtitle-remove-margin">Pending confirmation in validated ledger</h1>
+					<section style="height: 10px"></section>
+					<button class="button is-link" onclick="changePage('main-section')">Continue</button>
+				</div>
+				<section style="height: 10px"></section>
+			</div>
+		</div>
+	</section>
+	<section id="main-section" class="section has-text-centered pages" style="display: none">
+		<div class="container">
+			<div class="box"  style="-webkit-app-region: no-drag; max-width: 800px;">
+				<div class="tabs is-centered is-boxed is-medium" style="-webkit-app-region: no-drag">
+					<ul>
+						<li id="balance-button" class="is-active tab-buttons" onclick="openPage('balance-page', 'balance-button')">
+							<a>
+								<span class="icon is-small"><i class="fas fa-money-check-alt" aria-hidden="true"></i></span>
+								<span>Account</span>
+							</a>
+						</li>
+						<li id="send-button" class="tab-buttons" onclick="openPage('send-page', 'send-button')">
+							<a>
+								<span class="icon is-small"><i class="far fa-paper-plane" aria-hidden="true"></i></span>
+								<span>Send XRP</span>
+							</a>
+						</li>
+						<li id="history-button" class="tab-buttons" onclick="openPage('history-page', 'history-button')">
+							<a>
+								<span class="icon is-small"><i class="fas fa-history" aria-hidden="true"></i></span>
+								<span>History</span>
+								</a>
+						</li>
+						<li id="settings-button" class="tab-buttons" onclick="openPage('settings-page', 'settings-button')">
+							<a>
+								<span class="icon is-small"><i class="fas fa-cog" aria-hidden="true"></i></span>
+								<span>Settings</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<hr>
+				<div class="field">
+					<div id="balance-page" class="tabcontent" style="position:relative">
+						<h1 class="title has-text-dark">Address:</h1>
+						<span id="copy-popup" class="tag is-primary popup">Copied!</span>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" placeholder="rXXXXXXXXXXXXXXXXXXXXXXXXX" v-model="address" style="width: 380px" readonly>
+							</div>
+							<div class="control">
+								<button id="copy-button" class="button is-info is-rounded" v-on:click="CopyToClipboard">
+								Copy to Clipboard
+								</button>
+							</div>
+						</div>
+						<section style="height: 10px"></section>
+						</br>
+						<h1 class="title has-text-dark">Available Balance:</h1>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" placeholder="1337.12345" v-model="balanceXRP" style="width: 380px" readonly>
+							</div>
+							<div class="control">
+								<a class="button is-dark is-rounded">
+								XRP
+								</a>
+							</div>
+						</div>
+						<section style="height: 30px"></section>
+					</div>
+					<div id="send-page" class="tabcontent" style="display:none">
+						<h5 class="title is-5 has-text-dark">Recipient:</h5>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" v-model="destinationAddress" placeholder="e.g. rXXXXXXXXXXXXXXXXXXXXXaeCALE" style="width: 380px">
+							</div>
+							<div class="control">
+								<a class="button is-rounded is-success">
+									Address
+								</a>
+							</div>
+						</div>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" v-model="destinationTag" placeholder="e.g. 574823" style="width: 330px">
+							</div>
+							<label class="switch">
+								<input type="checkbox">
+								<span class="slider"></span>
+							</label>
+							<div class="control">
+								<a class="button is-rounded is-danger">
+									Destination Tag
+								</a>
+							</div>
+						</div>
+						</br>
+						<h5 class="title is-5 has-text-dark">Payment:</h5>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" v-model="paymentAmountXRP" placeholder="e.g. 1337.12345" style="width: 320px">
+							</div>
+							<div class="control">
+								<a class="button is-dark">
+									XRP
+								</a>
+							</div>
+							<div class="control">
+								<a class="button is-rounded is-link">
+									Amount
+								</a>
+							</div>
+						</div>
+						<div class="field has-addons has-addons-centered">
+							<div class="control">
+								<input class="input is-rounded has-text-centered" type="text" v-model="paymentMemo" placeholder="e.g. This is an on ledger memo" style="width: 380px">
+							</div>
+							<div class="control">
+								<a class="button is-rounded is-warning">
+									Memo
+								</a>
+							</div>
+						</div>
+						<section style="height: 20px"></section>
+						<button class="button is-link" v-on:click="SendTransaction">Send Payment</button>
+						<section style="height: 20px"></section>
+					</div>
+					<div id="history-page" class="tabcontent" style="display:none">
+						<h1 class="title">
+							History
+						</h1>
+						<p class="subtitle">
+							View your transaction <strong>settings</strong>!
+						</p>
+					</div>
+					<div id="settings-page" class="tabcontent" style="display:none">
+						<h1 class="title">
+							Settings
+						</h1>
+						<p class="subtitle">
+							Change any of the following <strong>settings</strong>!
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	</div>
+	</div>
+</body>
+  	<footer class="footer"  style="-webkit-app-region: no-drag">
+		<div class="content has-text-centered">
+			<p class="has-text-dark">
+			<strong class="has-text-dark">Easy XRP</strong> by 
+				<a id="twitter-button" class="button is-small is-link">
+					<span class="icon is-small">
+						<i class="fab fa-twitter"></i>
+					</span>
+					<span>Cale Robertson</span>
+				</a>
+			</p>
+			<p class="has-text-dark">The code is open source and available on 
+				<a id="github-button" class="button is-small is-link">
+					<span class="icon is-small">
+						<i class="fab fa-github"></i>
+					</span>
+					<span>GitHub</span>
+				</a>
+			</p>
+		</div>
+	</footer>
 </html>
+<script>
+	// In renderer process (web page).
+	const { ipcRenderer, clipboard } = require('electron')
+	const { dialog } = require('electron').remote
+	//console.log(dialog);
+	const RippleAPI = require('ripple-lib').RippleAPI;
+
+	const api = new RippleAPI({server: 'wss://s1.ripple.com:443'});
+
+	// Crete Vue app
+	var app = new Vue({
+		el: '#app',
+		mounted: function () {
+			api.connect().then(() => {
+				console.log('Connected to rippled WS');
+			}).catch(console.error);
+		},
+		data: {
+			seed: '',
+			ipcRenderer: ipcRenderer,
+			api: api,
+			public_key_HEX: '',
+			private_key_HEX: '',
+			address: '',
+			password: '',
+			walletPath: "",
+			dialog: dialog,
+			balanceXRP: 0,
+			reserveXRP: 0,
+			destinationAddress: "",
+			paymentAmountXRP: "",
+			destinationTag: "",
+			paymentMemo: ""
+		},
+		methods: {
+			GetAccountBalance: function () {
+				if(api.isConnected()) {
+					api.getBalances(this.$data.address).then(balances => {
+						console.log(balances);
+						this.$data.balanceXRP = balances[0].value;
+					});
+				}
+			},
+			OpenExistingWallet: function () {
+				var choice = this.$data.dialog.showOpenDialog({
+					filters: [
+						{name: 'EasyXRP Wallet', extensions: ['exw']},
+						{name: 'All Files', extensions: ['*']}
+					]
+				})
+				this.$data.walletPath = choice[0]
+				this.DecryptWallet(this.$data.walletPath, this.$data.password);
+			},
+			WalletCreate: function () {
+				var choice = this.$data.dialog.showSaveDialog({
+					filters: [
+						{name: 'EasyXRP Wallet', extensions: ['exw']}
+					]
+				})
+				console.log(choice);
+				var pre = encodeURI(choice);
+				//this.$data.walletPath = choice[0]
+				this.$data.walletPath = decodeURI(pre.replace(/%5C/g,"%5C%5C"));
+				console.log(this.$data.walletPath);
+				this.DeriveKeypair(this.$data.seed);
+				this.EncryptWallet();
+			}, 
+			DeriveKeypair: function (seed) {
+				//ipcRenderer.send('wallet-creation-message', pkey);
+				var keypair = null
+				try {
+					keypair = api.deriveKeypair(seed);
+				} catch (e) {
+					// Do something
+				}// catch {
+				
+				this.$data.public_key_HEX = keypair.publicKey;
+				this.$data.private_key_HEX = keypair.privateKey;
+				//alert(this.$data.public_key);
+
+				// Calculate XRPL Address
+
+				// Import required algorithms: SHA-256, RIPEMD160, and base58. Set the dictionary for base58.
+				'use strict';
+				const assert = require('assert');
+				const crypto = require('crypto');
+				const R_B58_DICT = 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz';
+				const base58 = require('base-x')(R_B58_DICT);
+
+				assert(crypto.getHashes().includes('sha256'));
+				assert(crypto.getHashes().includes('ripemd160'));
+
+				// Start with a 33-byte ECDSA secp256k1 public key, or a 32-byte Ed25119 public key. For Ed25519 keys, prefix the key with the byte 0xED.
+				//const pubkey_hex = 'ED9434799226374926EDA3B54B1B461B4ABF7237962EAE18528FEA67595397FA32';
+				const pubkey = Buffer.from(this.$data.public_key_HEX, 'hex');
+				assert(pubkey.length == 33);
+
+				// Calculate the RIPEMD160  hash of the SHA-256 hash of the public key. This value is the "Account ID".
+				const pubkey_inner_hash = crypto.createHash('sha256').update(pubkey);
+				const pubkey_outer_hash = crypto.createHash('ripemd160');
+				pubkey_outer_hash.update(pubkey_inner_hash.digest());
+				const account_id = pubkey_outer_hash.digest();
+
+				// Calculate the SHA-256 hash of the SHA-256 hash of the Account ID; take the first 4 bytes. This value is the "checksum".
+				const address_type_prefix = Buffer.from([0x00]);
+				const payload = Buffer.concat([address_type_prefix, account_id]);
+				const chksum_hash1 = crypto.createHash('sha256').update(payload).digest();
+				const chksum_hash2 = crypto.createHash('sha256').update(chksum_hash1).digest();
+				const checksum =  chksum_hash2.slice(0,4);
+
+				// Concatenate the payload and the checksum. Calculate the base58 value of the concatenated buffer. The result is the address.
+				const dataToEncode = Buffer.concat([payload, checksum]);
+				this.$data.address = base58.encode(dataToEncode);
+				//console.log(address);
+				// e.g. rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+				//alert(this.$data.private_key);
+			},
+			EncryptWallet: function () {
+				const crypto = require('crypto');
+				const fs = require('fs');
+				const path = require('path');
+				const content = this.$data.seed + "," + this.$data.address + "," + this.$data.public_key_HEX + "," + this.$data.private_key_HEX
+
+				const contentBuffer = new Buffer(content);
+
+				const initVect = crypto.randomBytes(16);
+				//const key = this.GetCipherKey(this.$data.password);
+				
+				const key = crypto.createHash('sha256').update(this.$data.password).digest();
+
+				const cipher = crypto.createCipheriv('aes256', key, initVect);
+				var cipherBuffer = Buffer.concat([
+					cipher.update(contentBuffer),
+					cipher.final()
+				]);
+
+				const outputBuffer = Buffer.concat([
+					initVect,
+					cipherBuffer
+				]);
+				//const writeStream = fs.createWriteStream(path.join(file + ".enc"));
+
+				try { 
+					//fs.writeFile('D:\\temp\\testEncrypt.exw', outputBuffer); 
+					fs.writeFile(this.$data.walletPath, outputBuffer);
+				}
+				catch(e) { 
+					alert('Failed to save the encrypted file !'); 
+				}
+
+				/*try { 
+					//fs.writeFile('D:\\temp\\testPlain.txt', initVect + ' + ' + content);
+					fs.writeFile('D:\\temp\\testPlain.txt', initVect + ' + ' + content);
+				}
+				catch(e) { 
+					alert('Failed to save the plain text file !'); 
+				}*/
+
+				changePage("wallet-created-section");
+			},
+			DecryptWallet: function (filePath, password) {
+				const fs = require('fs');
+				const crypto = require('crypto');
+				// First, create a stream which will read the init vect from the file.
+				let readIV;
+				let myApp = this;
+				fs.readFile(filePath, function (err, contents) {
+					// Hash password
+					const key = crypto.createHash('sha256').update(password).digest();
+					// Get IV from first 16 bytes of encrypted file
+					const iv = contents.slice(0,16);
+					// Get the actual encrypted content
+					const encryptedContent = contents.slice(16);
+					// Create decipher
+					const decipher = crypto.createDecipheriv('aes256', key, iv);
+					// Decrypt content
+					var decipherOutput = Buffer.concat([
+						decipher.update(encryptedContent),
+						decipher.final()
+					]);
+					// Print decrypted output
+					//alert("decrypted");
+					var outputArr = decipherOutput.toString('utf8')
+					outputArr = outputArr.split(',')
+					myApp.$data.seed = outputArr[0]
+					myApp.$data.address = outputArr[1]
+
+					//myApp.$data.address = "rxxxxxxxxxxx"
+					myApp.GetAccountBalance();
+					changePage("main-section");
+				});
+			},
+			CopyToClipboard: function () {
+				clipboard.writeText(this.$data.address);
+				if (!document.getElementById('copy-popup').classList.contains('fade')) {
+					document.getElementById('copy-popup').classList.add('fade');
+				}
+				setTimeout(function() {
+					document.getElementById('copy-popup').classList.remove('fade');
+				}, 1000);
+			},
+			SendTransaction: function () {
+				const instructions = {maxLedgerVersionOffset: 5};
+				const payment = {
+					source: {
+						address: this.$data.address,
+						maxAmount: {
+							value: this.$data.paymentAmountXRP.toString(),
+							currency: 'XRP'
+						}
+					},
+					destination: {
+						address: this.$data.destinationAddress,
+						amount: {
+							value: this.$data.paymentAmountXRP.toString(),
+							currency: 'XRP'
+						}
+					}
+				};
+				api.preparePayment(this.$data.address, payment, instructions).then(prepared => {
+					console.log('payment transaction prepared');
+					/*if(api.isConnected()) {
+						api.disconnect().then(() => {
+							console.log('Disconnected from rippled WS');
+						}).catch(console.error);
+					}*/
+					const {signedTransaction} = api.sign(prepared.txJSON, this.$data.seed);
+					console.log('payment transaction signed');
+					/*api.connect().then(() => {
+						console.log('Connected to rippled WS');
+					}).catch(console.error);*/
+					api.submit(signedTransaction).then(result => {
+						console.log(result.resultCode);
+						console.log(result);
+					});
+				});
+			}
+		}
+	})
+	//console.log(ipcRenderer.sendSync('synchronous-message', 'ping')) // prints "pong"
+	/*
+	ipcRenderer.on('asynchronous-reply', (event, arg) => {
+		//alert(arg) // prints "pong"
+	})
+	ipcRenderer.send('asynchronous-message', 'ping')
+
+	ipcRenderer.on('wallet-creation-reply', (event, arg) => {
+		// do something
+	});*/
+
+	function openPage(pageName, buttonName) {
+		// Hide all elements with class="tabcontent" by default */
+		var i, tabcontent, buttons;
+		tabcontent = document.getElementsByClassName("tabcontent");
+		
+		for (i = 0; i < tabcontent.length; i++) {
+			tabcontent[i].style.display = "none";
+		}
+		
+		// Make all buttons inactive
+		buttons = document.getElementsByClassName("tab-buttons");
+		for (i = 0; i < buttons.length; i++) {
+			if ( buttons[i].classList.contains('is-active') ) {
+				buttons[i].classList.remove('is-active');
+			}
+		}
+		
+		// Change which tab button is active
+		document.getElementById(buttonName).classList.add('is-active');
+
+		// Show the specific tab content
+		document.getElementById(pageName).style.display = "block";
+	}
+
+	function changePage(destination) {
+		var i, pages;
+		pages = document.getElementsByClassName("pages");
+		for (i = 0; i < pages.length; i++) {
+			pages[i].style.display = "none";
+		}
+		document.getElementById(destination).style.display = "block";
+	}
+	
+	function createButtonClick() {
+		
+	}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("balance-page").click();
+</script>
+
+<style>
+	html, body {
+	  height: 100%;
+	}
+	body {
+	  display: flex;
+	  flex-direction: column;
+	  background: hsl(204, 86%, 53%)
+	}
+	input, button{
+    vertical-align:middle;
+	}
+	.tabcontent {
+	  flex: 1 0 auto;
+	}
+	.footer {
+	  flex-shrink: 0;
+	  height: 50px;
+	  background: hsl(204, 86%, 53%);
+	}
+	.box {
+		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.is-text-input {
+		width: 60%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.is-text-input-alt {
+		width: 60%;
+		margin-left: 20%;
+		margin-right: auto;
+	}
+	.subtitle-remove-margin {
+		padding-bottom: 1px;
+		margin-bottom: 1px;
+	}
+	.popup {
+		position: absolute;
+		z-index: 1;
+		bottom: 80%;
+		left: 71%;
+		height: 30px;
+		opacity: 0;
+		transition: 0.7s opacity;
+	}
+	.popup.fade {
+		opacity: 1;
+		transition: 0.3s opacity;
+	}
+	::-webkit-scrollbar {
+		display: none;
+	}
+	/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 36px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+</style>
