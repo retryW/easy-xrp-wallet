@@ -17,10 +17,10 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^5.0.0"
+    "electron": "^5.0.13"
   },
   "dependencies": {
     "bulma-extensions": "^6.2.7",
-    "ripple-lib": "^1.2.1"
+    "ripple-lib": "^1.8.2"
   }
 }
